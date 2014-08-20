@@ -71,7 +71,7 @@ class HipchatMessage(NotifyPlugin):
                 endpoint=endpoint,
                 token=token,
                 room=room,
-                message='[ALERT]%(project_name)s %(message)s %(link)s' % {
+                message='[ALERT]%(project_name)s %(message)s [<a href="%(link)s">view</a>]' % {
                     'project_name': (' <strong>%s</strong>' % project.name) if include_project_name else '',
                     'message': alert.message,
                     'link': alert.get_absolute_url(),
