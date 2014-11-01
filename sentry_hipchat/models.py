@@ -10,6 +10,7 @@ from django import forms
 from django.conf import settings
 
 from sentry.plugins.bases.notify import NotifyPlugin
+from sentry_hipchat.actions import NotifyHipchatRoomAction
 
 import sentry_hipchat
 
@@ -80,16 +81,16 @@ class HipchatMessage(NotifyPlugin):
                 color=COLORS['ALERT'],
             )
 
-    def notify_users(self, group, event, fail_silently=False):
+    def notify_users(self, group, event, fail_silently=False, room=None):
         project = event.project
         token = self.get_option('token', project)
-        room = self.get_option('room', project)
+        if not room:
+            room = self.get_option('room', project)
         notify = self.get_option('notify', project) or False
         include_project_name = self.get_option('include_project_name', project) or False
         level = group.get_level_display().upper()
         link = group.get_absolute_url()
         endpoint = self.get_option('endpoint', project) or DEFAULT_ENDPOINT
-
 
         if token and room:
             self.send_payload(
@@ -105,7 +106,6 @@ class HipchatMessage(NotifyPlugin):
                 notify=notify,
                 color=COLORS.get(level, 'purple'),
             )
-
 
     def send_payload(self, endpoint, token, room, message, notify, color='red'):
         values = {
